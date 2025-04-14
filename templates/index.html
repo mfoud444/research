@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-indigo-700 mb-2">
+                    <i class="fas fa-file-alt mr-2"></i>Research Paper Generator
+                </h1>
+                <p class="text-gray-600">Generate complete research papers with AI</p>
+            </div>
+
+            <form id="paperForm" class="space-y-6">
+                <div>
+                    <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-book mr-2"></i>Research Subject
+                    </label>
+                    <input type="text" id="subject" name="subject" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Enter your research topic">
+                </div>
+
+                <div>
+                    <label for="model" class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-brain mr-2"></i>AI Model
+                    </label>
+                    <select id="model" name="model"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        {% for model in models %}
+                        <option value="{{ model }}" {% if model == 'gpt-4o' %}selected{% endif %}>{{ model }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-layer-group mr-2"></i>Paper Structure
+                    </label>
+                    <div class="flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="structure" value="automatic" checked
+                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                            <span class="ml-2 text-gray-700">Automatic</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="structure" value="manual"
+                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                            <span class="ml-2 text-gray-700">Manual</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- New automatic structure options -->
+                <div id="automaticOptions" class="space-y-4">
+                    <div>
+                        <label for="chapterCount" class="block text-sm font-medium text-gray-700 mb-1">
+                            <i class="fas fa-list-ol mr-2"></i>Number of Chapters
+                        </label>
+                        <div class="flex space-x-4 mb-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="chapterCountType" value="auto" checked
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-gray-700">Automatic</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="chapterCountType" value="manual"
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-gray-700">Manual</span>
+                            </label>
+                        </div>
+                        <div class="flex space-x-4">
+                            <select id="chapterCount" name="chapterCount" disabled
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="3">3 Chapters</option>
+                                <option value="4">4 Chapters</option>
+                                <option value="5">5 Chapters</option>
+                                <option value="6">6 Chapters</option>
+                            </select>
+                            <input type="number" id="customChapterCount" name="customChapterCount"
+                                class="hidden w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                min="1" max="10" placeholder="Enter number (1-10)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="wordCount" class="block text-sm font-medium text-gray-700 mb-1">
+                            <i class="fas fa-font mr-2"></i>Target Word Count
+                        </label>
+                        <div class="flex space-x-4 mb-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="wordCountType" value="auto" checked
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-gray-700">Automatic</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="wordCountType" value="manual"
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-gray-700">Manual</span>
+                            </label>
+                        </div>
+                        <div class="flex space-x-4">
+                            <select id="wordCount" name="wordCount" disabled
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="2000">2,000 words</option>
+                                <option value="3000">3,000 words</option>
+                                <option value="5000">5,000 words</option>
+                                <option value="8000">8,000 words</option>
+                                <option value="10000">10,000 words</option>
+                            </select>
+                            <input type="number" id="customWordCount" name="customWordCount"
+                                class="hidden w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                min="500" max="20000" step="100" placeholder="Enter words (500-20000)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-quote-right mr-2"></i>References
+                        </label>
+                        <div class="flex items-center mb-2">
+                            <input type="checkbox" id="includeReferences" name="includeReferences"
+                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                            <label for="includeReferences" class="ml-2 text-sm text-gray-700">Include References Section</label>
+                        </div>
+                        <select id="citationStyle" name="citationStyle" disabled
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="APA">APA</option>
+                            <option value="MLA">MLA</option>
+                            <option value="Chicago">Chicago</option>
+                            <option value="Harvard">Harvard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" id="startBtn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+                        <i class="fas fa-play mr-2"></i> Generate Paper
+                    </button>
+                    <button type="button" id="abortBtn" style="display: none;" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700">
+                        <i class="fas fa-stop mr-2"></i> Stop Generation
+                    </button>
+                </div>
+            </form>
+
+            <div id="progressContainer" class="mt-8 hidden">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-tasks mr-2"></i>Generation Progress
+                </h3>
+                
+                <!-- Chapter-specific progress -->
+                <div id="chapterProgressContainer" class="bg-blue-50 p-4 rounded-lg mb-4 hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-blue-800" id="currentChapter">Chapter 1/5: Introduction</span>
+                        <span class="text-sm font-semibold text-blue-600" id="chapterPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-blue-200 rounded-full h-2.5">
+                        <div id="chapterProgressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1 text-xs text-blue-600">
+                        <span id="chapterTime">Time elapsed: 0s</span>
+                        <span id="chapterStatus">Starting...</span>
+                    </div>
+                    <div id="chapterError" class="text-red-500 text-xs mt-1 hidden"></div>
+                </div>
+
+                <!-- Overall progress -->
+                <div class="space-y-4">
+                    <div id="progressSteps" class="space-y-3"></div>
+                    <div class="relative pt-1">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span id="progressText" class="text-xs font-semibold inline-block text-indigo-600">
+                                    0%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
+                            <div id="progressBar" style="width:0%"
+                                class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500 transition-all duration-300"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resultContainer" class="mt-8 hidden">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-check-circle mr-2 text-green-500"></i>Generation Complete
+                </h3>
+                <div class="flex space-x-4">
+                    <a id="downloadDocx" href="#"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
+                        <i class="fas fa-file-word mr-2"></i> Download Word
+                    </a>
+                    <a id="downloadMd" href="#"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-file-code mr-2"></i> Download Markdown
+                    </a>
+                </div>
+            </div>
+
+            <div id="errorContainer" class="mt-8 hidden">
+                <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p id="errorMessage" class="text-sm text-red-700"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

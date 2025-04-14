@@ -1,0 +1,9 @@
+flask
+# g4f
+pypandoc
+python-dotenv
+werkzeug
+uvicorn
+gunicorn
+gevent
+openai
