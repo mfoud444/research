@@ -118,7 +118,7 @@ class G4FServiceAPI(BaseAIService):
         super().__init__(config)
         self.base_url = self.config.get('base_url', "http://localhost:1337/v1")
         self.default_model = self.config.get('default_model', "gpt-4o-mini")
-        logger.error(f"G4F API error: {self.base_url}")
+        logger.error(f"G4F API : {self.base_url}")
 
     def generate_content(self, model: str, prompt: str) -> str:
         payload = {
@@ -144,7 +144,14 @@ class G4FServiceAPI(BaseAIService):
     def get_available_models(self) -> List[str]:
         try:
             response = self._make_request("GET", f"{self.base_url}/models")
-            return sorted(response.get('data', []))
+            # Extract model IDs from the response data
+            models = []
+            for model in response.get('data', []):
+                if isinstance(model, dict) and 'id' in model:
+                    models.append(model['id'])
+                elif isinstance(model, str):
+                    models.append(model)
+            return sorted(models) if models else ['gpt-4o-mini', 'gpt-4', 'gpt-3.5-turbo']
         except Exception as e:
             logger.error(f"Failed to get G4F API models: {str(e)}")
             return ['gpt-4o-mini', 'gpt-4', 'gpt-3.5-turbo']
