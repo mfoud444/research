@@ -29,7 +29,7 @@ class Config:
          'openai': {
             'api_key': os.getenv('OPENAI_API_KEY'),
             'organization': os.getenv('OPENAI_ORG_ID'),
-            'base_url': os.getenv('OPENAI_BASE_URL', "https://christian-heidie-randai-0573d5c0.koyeb.app/v1"),  # Default OpenAI endpoint
+            'base_url': os.getenv('OPENAI_BASE_URL', "https://oral-una-sarr-e3334ca1.koyeb.app/v1"),  # Default OpenAI endpoint
             'max_tokens': 1000,
             'temperature': 0.7,
             'top_p': 0.9,
@@ -37,7 +37,7 @@ class Config:
             'presence_penalty': 0
         },
             'g4f-api': {
-            'base_url': 'https://christian-heidie-randai-0573d5c0.koyeb.app/v1',
+            'base_url': 'https://oral-una-sarr-e3334ca1.koyeb.app/v1',
             'default_model': 'gpt-4o-mini'
         }
     }
