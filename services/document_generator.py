@@ -20,6 +20,10 @@ class DocumentGenerator:
         md_path = os.path.join(self.upload_folder, md_filename)
         docx_path = os.path.join(self.upload_folder, docx_filename)
         
+        # Check if input file exists
+        if not os.path.exists(md_path):
+            raise Exception(f"Markdown file not found: {md_path}")
+        
         command = [
             "pandoc", md_path,
             "-o", docx_path,
@@ -31,4 +35,23 @@ class DocumentGenerator:
         if os.path.exists("reference.docx"):
             command.extend(["--reference-doc", "reference.docx"])
         
-        subprocess.run(command, check=True)
+        try:
+            # Run pandoc with timeout and capture output
+            result = subprocess.run(
+                command,
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=60  # Add 60 second timeout
+            )
+            
+            # Check if output file was created
+            if not os.path.exists(docx_path):
+                raise Exception("Word file was not created after conversion")
+            
+        except subprocess.TimeoutExpired:
+            raise Exception("Conversion timed out after 60 seconds")
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Pandoc conversion failed: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Conversion error: {str(e)}")
