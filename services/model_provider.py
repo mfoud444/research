@@ -143,15 +143,14 @@ class G4FServiceAPI(BaseAIService):
 
     def get_available_models(self) -> List[str]:
         try:
-            response = self._make_request("GET", f"{self.base_url}/models")
-            # Extract model IDs from the response data
-            models = []
-            for model in response.get('data', []):
-                if isinstance(model, dict) and 'id' in model:
-                    models.append(model['id'])
-                elif isinstance(model, str):
-                    models.append(model)
-            return sorted(models) if models else ['gpt-4o-mini', 'gpt-4', 'gpt-3.5-turbo']
+                models = sorted(g4f.models._all_models)
+                # Prioritize certain models
+                for preferred in ['gpt-4o', 'gpt-4', 'claude-2']:
+                    if preferred in models:
+                        models.remove(preferred)
+                        models.insert(0, preferred)
+                return models
+              
         except Exception as e:
             logger.error(f"Failed to get G4F API models: {str(e)}")
             return ['gpt-4o-mini', 'gpt-4', 'gpt-3.5-turbo']
