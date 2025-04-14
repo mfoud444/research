@@ -218,9 +218,9 @@ function updateProgress(data) {
     // Update steps
     if (data.steps) {
         // First render if steps don't exist
-        if (!document.getElementById('step-0')) {
+        // if (!document.getElementById('step-0')) {
             renderSteps(data.steps);
-        }
+        // }
         updateSteps(data.steps);
     }
 
